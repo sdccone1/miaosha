@@ -100,8 +100,8 @@
                     window.location.href="/user/to_register";
                 }
             },
-            error:function(){
-                alert("请求错误，请重新尝试");
+            error:function(data){
+                alert(data.err);
                 window.location.href="/user/to_register";
             }
         });

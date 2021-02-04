@@ -1,3 +1,8 @@
+/**
+ * @Author:David Ma
+ * @Date:2021-02-01
+ */
+
 package util
 
 import (
@@ -14,4 +19,9 @@ func TimeToStamp(time time.Time) (timeStamp int64) {
 func StampToTime(timeStamp int64) time.Time {
 	dateTime := time.Unix(timeStamp, 0)
 	return dateTime
+}
+
+func CurrentTime() (currentTime string) {
+	currentTime = time.Now().Format(TIMELAYOUT)
+	return currentTime
 }
