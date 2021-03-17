@@ -29,6 +29,7 @@ var (
 
 func init() {
 	lastTimeStamp = time.Now().UnixNano() / 1000000 //这里要除以10^6是因为要保证时间戳最多占41位(2^64 / 2^20)
+	SetMachineId()
 }
 
 func SetMachineId() { //设置一个机器标识，如IP编码,防止分布式机器生成重复码,也可以是IP地址加上一个随机值

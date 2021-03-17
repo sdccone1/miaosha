@@ -54,11 +54,11 @@ func newCore(filePath string, level zapcore.Level, maxSize int, maxBackups int, 
 		LevelKey:         "level",
 		TimeKey:          "time",
 		NameKey:          "name",
-		CallerKey:        "lines", //在日志中lines这个<k,v>对的value表示的即为触发将msg写在log的代码所在的文件及行号
+		CallerKey:        "location", //在日志中lines这个<k,v>对的value表示的即为触发将msg写在log的代码所在的文件及行号
 		FunctionKey:      "func",
 		StacktraceKey:    "stacktrace",                   //development mode下生效
 		LineEnding:       zapcore.DefaultLineEnding,      //日志每一行的结尾默认为换行符'\n'
-		EncodeLevel:      zapcore.LowercaseLevelEncoder,  //小写且自带颜色的编码器
+		EncodeLevel:      zapcore.LowercaseLevelEncoder,  //小写的编码器
 		EncodeTime:       zapcore.ISO8601TimeEncoder,     //ISO8601 UTC 时间格式
 		EncodeDuration:   zapcore.SecondsDurationEncoder, //编码的所需时间
 		EncodeCaller:     zapcore.FullCallerEncoder,      //全路径编码器

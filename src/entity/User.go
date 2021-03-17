@@ -9,8 +9,8 @@ import "time"
 
 type LoginUser struct {
 	// 每个成员后面都有标签, 表示在解析对应数据格式时绑定到对方的字段名
-	Mobile   string ` xml:"mobile" json:"mobile"  binding:"required"`
-	PassWord string `xml:"password" json:"password"  binding:"required"`
+	Mobile   string ` xml:"mobile" json:"mobile" query:"mobile" binding:"ValidateFormat"`
+	PassWord string `xml:"password" json:"password"  query:"password" binding:"required"`
 }
 
 /**

@@ -1,4 +1,4 @@
-{{define "user/register.html" }}<!--当模板文件夹内含多级目录时，需要借助头尾两个花括号里来包裹我们的Html文件以此来指定每个模板在其内的具体位置-->
+{{define "user/login.html" }}<!--当模板文件夹内含多级目录时，需要借助头尾两个花括号里来包裹我们的Html文件以此来指定每个模板在其内的具体位置-->
 <html lang="en">
 <head>
     <!-- JQuery -->
@@ -18,22 +18,14 @@
 
 
     <meta charset="UTF-8">
-    <title>注册</title>
+    <title>登录</title>
 
 </head>
 <body>
 <form id="loginForm" name = "loginForm" method="post" enctype="application/x-www-form-urlencoded" style="width:30%; margin:0 auto;">
 
-    <h2 style="text-align:center; margin-bottom: 20px">用户注册</h2>
+    <h2 style="text-align:center; margin-bottom: 20px">用户登录</h2>
 
-    <div class="form-group">
-        <div class="row">
-            <label class="form-label col-md-4">请输入昵称</label>
-            <div class="col-md-8">
-                <input id="username" name="username" class="form-control" type="text"  placeholder="昵称" required="true" minlength="1" maxlength="16" />
-            </div>
-        </div>
-    </div>
 
     <div class="form-group">
         <div class="row">
@@ -61,7 +53,7 @@
             <button class="btn btn-primary btn-block" type="reset" onclick="reset()">重置</button>
         </div>
         <div class="col-md-6">
-            <button class="btn btn-primary btn-block" type="submit" onclick="register()">注册</button>
+            <button class="btn btn-primary btn-block" type="submit" onclick="login()">登录</button>
         </div>
     </div>
 </form>
@@ -77,32 +69,29 @@
        // var password = document.getElementById("password").value
 
         //case2:借助JQuery
-       $("#username").innerText = ""
        $("#mobile").innerText = ""
        $("#password").innerText = ""
    }
 
-   function register(){
-       var user = {
-           "mobile" : $("#mobile").val(),//用val()取值而不是.因为val()是在有jQuery插件的时候才能用，而这里我们前面刚好使用了JQuery
-           "username" : $("#username").val(),
-           "password" : $("#password").val()
-       };
+   function login(){
        $.ajax({
-            url:"/user/do_register",
-            type:"POST",
-            data:JSON.stringify(user),//这里是把对象给封装成一个JSON串注意是JSON形式的字符串而不是JSON对象
+            url:"/user/do_login",
+            type:"Get", //因为这里是Get请求，参数会挂在url的后面以参数的方式进行传递，而不是像POST那样封装进Body里进行传输
+            data:{
+                Mobile :$("#mobile").val(),//用val()取值而不是.因为val()是在有jQuery插件的时候才能用，而这里我们前面刚好使用了JQuery
+                PassWord:$("#password").val()
+            },//这里是把对象给封装成一个JSON串注意是JSON形式的字符串而不是JSON对象
             success:function(data){//当请求成功被后端接收到时调用回调函数success。这里的data即为后端返回的数据(这里返回的是一个JSON对象不是JSON串)
-                alert(data.msg)
+                alert(data.msg);
                 if(data.status == 0){//如果是JSON对象则前端可以像访问对象的属性那样来访问JSON对象的字段值
-                    window.location.href="/user/to_login"; //注意这里，这里通过设置window.location.href属性的值去访问指定URL时，此时相当于重新发起一个Get 类型的request请求来访问指定url下的服务器资源
+                    window.location.href="/goods/to_list";
                 }else{
-                    window.location.href = "/user/to_register";
+                    window.location.href="/user/to_login";//window.location.href是不方法，它是一个属性，它将告诉您浏览器的当前URL位置。更改属性值将重定向页面。
                 }
             },
             error:function(){
-                alert("error occur");
-                window.location.href = "/user/to_register";
+                alert("error occur!!");
+                window.location.href="/user/to_login";
             }
         });
    }
