@@ -60,19 +60,17 @@ func doRegister(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusBadRequest, gin.H{"err": err.Error()})
-		return
-	}
-	if service.UserRegister(user) {
+	} else if service.UserRegister(user) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"status": 0,
 			"msg":    "注册成功，欢迎您：" + user.UserName,
 		})
-		return
+	} else {
+		ctx.JSON(http.StatusOK, gin.H{
+			"status": 1,
+			"msg":    "注册失败，用户已存在",
+		})
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": 1,
-		"msg":    "注册失败，用户已存在",
-	})
 }
 
 func doLogin(ctx *gin.Context) {

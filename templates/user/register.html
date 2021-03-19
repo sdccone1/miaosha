@@ -3,7 +3,7 @@
 <head>
     <!-- JQuery -->
     <script type="text/javascript" src="/static/js/jquery-3.5.1.js"></script>
-    <!-- CSS-->
+
     <style type="text/css">
         html,body{
             height:100%;
@@ -22,7 +22,7 @@
 
 </head>
 <body>
-<form id="loginForm" name = "loginForm" method="post" enctype="application/x-www-form-urlencoded" style="width:30%; margin:0 auto;">
+<form id="loginForm" name = "loginForm" style="width:30%; margin:0 auto;">
 
     <h2 style="text-align:center; margin-bottom: 20px">用户注册</h2>
 
@@ -58,10 +58,11 @@
 
     <div class="row" style="margin-top:40px;">
         <div class="col-md-6">
-            <button class="btn btn-primary btn-block" type="reset" onclick="reset()">重置</button>
+            <input id="btnReSet" type="button" class="btn btn-primary btn-block" value="重置"  onclick="reset()">
         </div>
+
         <div class="col-md-6">
-            <button class="btn btn-primary btn-block" type="submit" onclick="register()">注册</button>
+            <input id="btnSubmit" type="button" class="btn btn-primary btn-block" value="注册"  onclick="register()">
         </div>
     </div>
 </form>
@@ -84,25 +85,26 @@
 
    function register(){
        var user = {
-           "mobile" : $("#mobile").val(),//用val()取值而不是.因为val()是在有jQuery插件的时候才能用，而这里我们前面刚好使用了JQuery
-           "username" : $("#username").val(),
-           "password" : $("#password").val()
+           mobile : $("#mobile").val(),//用val()取值而不是.因为val()是在有jQuery插件的时候才能用，而这里我们前面刚好使用了JQuery
+           username : $("#username").val(),
+           password : $("#password").val()
        };
        $.ajax({
             url:"/user/do_register",
             type:"POST",
             data:JSON.stringify(user),//这里是把对象给封装成一个JSON串注意是JSON形式的字符串而不是JSON对象
+            async:false,
             success:function(data){//当请求成功被后端接收到时调用回调函数success。这里的data即为后端返回的数据(这里返回的是一个JSON对象不是JSON串)
                 alert(data.msg)
                 if(data.status == 0){//如果是JSON对象则前端可以像访问对象的属性那样来访问JSON对象的字段值
-                    window.location.href="/user/to_login"; //注意这里，这里通过设置window.location.href属性的值去访问指定URL时，此时相当于重新发起一个Get 类型的request请求来访问指定url下的服务器资源
+                    window.location.href ="/user/to_login"; //注意这里，这里通过设置window.location.href属性的值去访问指定URL时，此时相当于重新发起一个Get 类型的request请求来访问指定url下的服务器资源
                 }else{
                     window.location.href = "/user/to_register";
                 }
             },
             error:function(){
                 alert("error occur");
-                window.location.href = "/user/to_register";
+                window.location.href = "/error/to_error";
             }
         });
    }

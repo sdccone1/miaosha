@@ -13,6 +13,7 @@ import (
 	"miaosha/src/entity"
 	"miaosha/src/redisService"
 	"miaosha/src/util"
+	"reflect"
 	"strconv"
 	"time"
 )
@@ -40,33 +41,41 @@ func UserRegister(user *entity.RegisterUser) bool {
 }
 
 func UserLogin(ctx *gin.Context, user *entity.LoginUser) int {
-	usid := strconv.FormatInt(util.GetSnowflakeId(), 10)
-	fmt.Printf("userSID= %v \n", usid)
-	ustr := util.ObjectToString(user)
-	fmt.Printf("ustr=%s \n", ustr)
+	option := redisService.InitRedisClusterOption([]string{"192.168.211.129:7001", "192.168.211.129:7002", "192.168.211.129:7003"}, false,
+		false, false, "davidmaqq0", 20, 5)
+	redisClusterPool := redisService.GetRedisClusterConnectionPoll(ctx, option)
+	if redisClusterPool == nil {
+		return -1 // -1表示服务器内部出错
+	}
 	if sid := util.GetSidFromCookie(ctx); sid != "" {
-		if !redisService.IsRedisDefaultClusterClientPoolAlive(ctx) {
-			return -1 // -1表示服务器内部出错
+		uFromRedis, err := redisClusterPool.Get(ctx, sid).Result()
+		if err != nil {
+			zap.L().Error(err.Error())
+			return -1
 		}
-		if redisService.Set(ctx, usid, ustr, USERSIDEXPIRATION) {
-			fmt.Printf("user %v 登录成功\n", user.Mobile)
-			return 0 // 0表示success
+		obj := util.StringToObject(uFromRedis, reflect.TypeOf(user).Elem())
+		if obj == nil {
+			return -1
 		}
-		return -1
+		u := obj.(*entity.LoginUser)
+		zap.L().Info(fmt.Sprintf("user: %v login success\n", u.Mobile))
+		return 0
 	}
 	u := dao.GetUserByMobile(user.Mobile)
 	if u == nil || user.PassWord != u.PassWord {
 		return 1 //1表示参数错误
 	}
-	if !redisService.IsRedisDefaultClusterClientPoolAlive(ctx) {
-		return -1 // -1表示服务器内部出错
+	usid := strconv.FormatInt(util.GetSnowflakeId(), 10)
+	ustr := util.ObjectToString(user)
+	fmt.Printf("init userSID= %v ,ustr= %v \n", usid, ustr)
+	if _, err := redisClusterPool.Set(ctx, usid, ustr, USERSIDEXPIRATION).Result(); err != nil {
+		zap.L().Error(err.Error())
+		return -1
 	}
-	if redisService.Set(ctx, usid, ustr, USERSIDEXPIRATION) {
-		ctx.SetCookie("userSID", usid, USERCOOKIEEXPIRATION, "/", "localhost", false, false)
-		fmt.Printf("user %v 登录成功\n", user.Mobile)
-		return 0 // 0表示success
-	}
-	return -1
+	zap.L().Info(fmt.Sprintf("Redis Set operation success,key = %s value = %s \n", usid, ustr))
+	ctx.SetCookie("usid", usid, USERCOOKIEEXPIRATION, "/", "localhost", false, false)
+	zap.L().Info(fmt.Sprintf("user %v 登录成功!\n", user.Mobile))
+	return 0
 }
 
 func GetUserInfo(mobile string) *entity.UserInfo {

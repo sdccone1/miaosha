@@ -18,5 +18,4 @@ func main() { //在运行时，不要直接右键run,因为此时会导致项目
 	if err != nil {
 		zap.L().Panic(err.Error())
 	}
-
 }

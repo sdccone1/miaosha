@@ -22,7 +22,7 @@
 
 </head>
 <body>
-<form id="loginForm" name = "loginForm" method="post" enctype="application/x-www-form-urlencoded" style="width:30%; margin:0 auto;">
+<form id="loginForm" name = "loginForm"  style="width:30%; margin:0 auto;">
 
     <h2 style="text-align:center; margin-bottom: 20px">用户登录</h2>
 
@@ -50,10 +50,11 @@
 
     <div class="row" style="margin-top:40px;">
         <div class="col-md-6">
-            <button class="btn btn-primary btn-block" type="reset" onclick="reset()">重置</button>
+            <input id="btnReSet" type="button" class="btn btn-primary btn-block" value="重置"  onclick="reset()">
         </div>
+
         <div class="col-md-6">
-            <button class="btn btn-primary btn-block" type="submit" onclick="login()">登录</button>
+            <input id="btnSubmit" type="button" class="btn btn-primary btn-block" value="登录"  onclick="login()">
         </div>
     </div>
 </form>
@@ -76,22 +77,24 @@
    function login(){
        $.ajax({
             url:"/user/do_login",
-            type:"Get", //因为这里是Get请求，参数会挂在url的后面以参数的方式进行传递，而不是像POST那样封装进Body里进行传输
+            type:"GET", //因为这里是Get请求，参数会挂在url的后面以参数的方式进行传递，而不是像POST那样封装进Body里进行传输
             data:{
                 Mobile :$("#mobile").val(),//用val()取值而不是.因为val()是在有jQuery插件的时候才能用，而这里我们前面刚好使用了JQuery
                 PassWord:$("#password").val()
-            },//这里是把对象给封装成一个JSON串注意是JSON形式的字符串而不是JSON对象
+            },
             success:function(data){//当请求成功被后端接收到时调用回调函数success。这里的data即为后端返回的数据(这里返回的是一个JSON对象不是JSON串)
                 alert(data.msg);
-                if(data.status == 0){//如果是JSON对象则前端可以像访问对象的属性那样来访问JSON对象的字段值
+                if(data.status == 0){//如果是JSON对象则前端可以像访问对象的属性那样来访问JSON对象的字段
                     window.location.href="/goods/to_list";
-                }else{
+                }else if(data.status == 1){
                     window.location.href="/user/to_login";//window.location.href是不方法，它是一个属性，它将告诉您浏览器的当前URL位置。更改属性值将重定向页面。
+                }else{
+                    window.location.href="/error/to_error";
                 }
             },
-            error:function(){
-                alert("error occur!!");
-                window.location.href="/user/to_login";
+            error:function(data){
+                alert(data.msg);
+                window.location.href="/error/to_error";
             }
         });
    }

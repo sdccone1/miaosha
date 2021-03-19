@@ -15,6 +15,7 @@ import (
 	"miaosha/src/logService"
 	"miaosha/src/util"
 	"miaosha/src/validatorService"
+	"net/http"
 	"time"
 )
 
@@ -45,5 +46,11 @@ func SetUpRounter() *gin.Engine {
 	//@parm:relativePath:表示在html中所有请求路径为/static(也就是这里的/static跟/user类似，相当于一个URI)下的资源均从@parm:root所表示的项目路径下来找
 	//且一般保持/static和static文件夹名一致，方便找，也可以不一致
 	r.Static("/static", "static")
+
+	r.GET("/error/to_error", toError)
 	return r
+}
+
+func toError(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "error/error.html", nil)
 }

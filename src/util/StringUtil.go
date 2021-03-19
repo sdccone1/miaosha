@@ -26,12 +26,13 @@ func ObjectToString(obj interface{}) string {
 	objectToString, err := json.Marshal(obj)
 	if err != nil {
 		zap.L().Error(err.Error())
+		return ""
 	}
 	return string(objectToString)
 }
 
 func StringToObject(str string, p reflect.Type) interface{} {
-	obj := reflect.New(p)
+	obj := reflect.New(p).Interface()
 	if err := json.Unmarshal([]byte(str), obj); err != nil {
 		zap.L().Error(err.Error())
 		return nil

@@ -14,14 +14,14 @@ func checkError(err error) {
 }
 
 func GetSidFromCookie(ctx *gin.Context) string {
-	sidFromUrl := ctx.Query("userSID")
+	sidFromUrl := ctx.Query("usid")
 	if sidFromUrl != "" {
 		return sidFromUrl
 	}
-	if sidFromHeader, err := ctx.Cookie("userSID"); err != nil {
+	sidFromHeader, err := ctx.Cookie("usid")
+	if err != nil {
 		checkError(err)
 		return ""
-	} else {
-		return sidFromHeader
 	}
+	return sidFromHeader
 }
